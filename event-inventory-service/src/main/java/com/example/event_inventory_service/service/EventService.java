@@ -22,17 +22,15 @@ public class EventService {
     private StringRedisTemplate redisTemplate;
 
     @Autowired
-    private TicketsReservationScript ticketsReservationScript;  // ← OVO JE FALILO
+    private TicketsReservationScript ticketsReservationScript;
 
-    // Inicijalizacija Redis ključa za karte pri kreiranju događaja
     public Event createEvent(Event event) {
         Event saved = eventRepository.save(event);
-        // Ključ: event:<id>:tickets, vrednost: kapacitet
+
         redisTemplate.opsForValue().set("event:" + saved.getId() + ":tickets", String.valueOf(saved.getCapacity()));
         return saved;
     }
 
-    // Vraća listu događaja sa preostalim brojem karata iz Redisa
     public List<Map<String, Object>> getAllEventsWithAvailability() {
         List<Event> events = eventRepository.findAll();
         List<Map<String, Object>> result = new java.util.ArrayList<>();
@@ -56,7 +54,7 @@ public class EventService {
     }
 
     public long reserveTickets(Long eventId, int count) {
-        DefaultRedisScript<Long> script = ticketsReservationScript.getReserveScript();  // ← Koristi injektovanu instancu
+        DefaultRedisScript<Long> script = ticketsReservationScript.getReserveScript();
         Long result = redisTemplate.execute(
                 script,
                 List.of("event:" + eventId + ":tickets"),
@@ -65,6 +63,6 @@ public class EventService {
         if (result == null) {
             throw new RuntimeException("Redis execution error");
         }
-        return result; // -1, -2, ili preostali broj
+        return result;
     }
 }

@@ -13,14 +13,13 @@ public class Notification {
 
     private Long bookingId;
 
-    private String type;       // CONFIRMED ili EXPIRED
+    private String type;
 
     @Column(length = 500)
     private String message;
 
     private LocalDateTime timestamp;
 
-    // Konstruktori
     public Notification() {}
 
     public Notification(Long bookingId, String type, String message, LocalDateTime timestamp) {
@@ -30,7 +29,6 @@ public class Notification {
         this.timestamp = timestamp;
     }
 
-    // Getteri i setteri
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

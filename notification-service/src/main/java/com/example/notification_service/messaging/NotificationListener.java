@@ -23,7 +23,7 @@ public class NotificationListener {
         notif.setMessage("Booking " + bookingId + " confirmed. E-tickets sent to email.");
         notif.setTimestamp(LocalDateTime.now());
         notificationRepository.save(notif);
-        System.out.println("✅ Notification sent: CONFIRMED for booking " + bookingId);
+        System.out.println("Notification sent: CONFIRMED for booking " + bookingId);
     }
 
     @RabbitListener(queues = "booking.expired")
@@ -34,6 +34,6 @@ public class NotificationListener {
         notif.setMessage("Booking " + bookingId + " expired. Tickets returned to inventory.");
         notif.setTimestamp(LocalDateTime.now());
         notificationRepository.save(notif);
-        System.out.println("⚠️ Notification sent: EXPIRED for booking " + bookingId);
+        System.out.println("Notification sent: EXPIRED for booking " + bookingId);
     }
 }

@@ -50,19 +50,17 @@ class BookingServiceApplicationTests {
 
 	@Test
 	void testCreateBooking() {
-		// 1. Mock Redis (ako se koristi u servisu)
+
 		ValueOperations<String, String> valueOps = Mockito.mock(ValueOperations.class);
 		when(stringRedisTemplate.opsForValue()).thenReturn(valueOps);
 		when(valueOps.get(anyString())).thenReturn("10");
 
-		// 2. Mock RestTemplate – sada pravilno za postForEntity
 		when(restTemplate.postForEntity(
 				anyString(),
 				any(HttpEntity.class),
 				eq(Map.class)
 		)).thenReturn(new ResponseEntity<>(Map.of("remainingTickets", 8), HttpStatus.OK));
 
-		// 3. Poziv
 		Booking booking = bookingService.createBooking(1L, 1L, 2);
 		assertThat(booking).isNotNull();
 		assertThat(booking.getStatus()).isEqualTo(Booking.BookingStatus.PENDING);
@@ -70,7 +68,7 @@ class BookingServiceApplicationTests {
 
 	@Test
 	void testConfirmBooking() {
-		// Priprema: kreiramo booking direktno u bazi
+
 		Booking booking = new Booking();
 		booking.setUserId(1L);
 		booking.setEventId(1L);
@@ -78,10 +76,8 @@ class BookingServiceApplicationTests {
 		booking.setStatus(Booking.BookingStatus.PENDING);
 		booking = bookingRepository.save(booking);
 
-		// Mock Redis provera
 		when(stringRedisTemplate.hasKey("booking:" + booking.getId())).thenReturn(true);
 
-		// Potvrda
 		Booking confirmed = bookingService.confirmBooking(booking.getId());
 		assertThat(confirmed.getStatus()).isEqualTo(Booking.BookingStatus.CONFIRMED);
 	}

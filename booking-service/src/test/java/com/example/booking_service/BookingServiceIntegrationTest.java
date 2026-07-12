@@ -45,10 +45,9 @@ class BookingServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Inicijalni broj karata u Redis-u
+
         redisTemplate.opsForValue().set("event:" + eventId + ":tickets", "10");
 
-        // Mock odgovora Inventory servisa
         ResponseEntity<Map> responseEntity = new ResponseEntity<>(
                 Map.of("remainingTickets", 8), HttpStatus.OK);
         when(restTemplate.postForEntity(
@@ -63,7 +62,7 @@ class BookingServiceIntegrationTest {
         Booking booking = bookingService.createBooking(1L, eventId, 2);
         assertThat(booking.getStatus()).isEqualTo(Booking.BookingStatus.PENDING);
 
-        assertThat(redisTemplate.opsForValue().get("event:" + eventId + ":tickets")).isEqualTo("10"); // Nije se promenilo jer smo mock-ovali Inventory
+        assertThat(redisTemplate.opsForValue().get("event:" + eventId + ":tickets")).isEqualTo("10");
 
         String reservationKey = "booking:" + booking.getId();
         assertThat(redisTemplate.hasKey(reservationKey)).isTrue();
@@ -77,23 +76,19 @@ class BookingServiceIntegrationTest {
     void shouldExpireBookingAndReturnTickets() {
         Booking booking = bookingService.createBooking(1L, eventId, 2);
 
-        // Simuliramo rad Inventory servisa (pošto je RestTemplate mockovan)
         redisTemplate.opsForValue().decrement("event:" + eventId + ":tickets", 2);
 
         String reservationKey = "booking:" + booking.getId();
 
-        // Ručno šaljemo expired poruku na Redis kanal
         byte[] channel = "__keyevent@0__:expired".getBytes();
         byte[] message = reservationKey.getBytes();
         redisTemplate.getConnectionFactory().getConnection().publish(channel, message);
 
-        // Čekaj da status postane EXPIRED
         await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
             Booking expired = bookingRepository.findById(booking.getId()).orElseThrow();
             assertThat(expired.getStatus()).isEqualTo(Booking.BookingStatus.EXPIRED);
         });
 
-        // Provera vraćanja karata (treba da bude opet 10)
         assertThat(redisTemplate.opsForValue().get("event:" + eventId + ":tickets")).isEqualTo("10");
     }
 

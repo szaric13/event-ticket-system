@@ -17,20 +17,17 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    // Kreiranje događaja (admin)
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
         Event created = eventService.createEvent(event);
         return ResponseEntity.ok(created);
     }
 
-    // Lista događaja sa brojem preostalih karata
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEventsWithAvailability());
     }
 
-    // Pojedinačni događaj (za internu upotrebu)
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEvent(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.getEventById(id));

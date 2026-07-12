@@ -14,18 +14,17 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;     // u pravom sistemu bi bio entitet User
+    private Long userId;
     private Long eventId;
     private int ticketCount;
 
     @Enumerated(EnumType.STRING)
-    private BookingStatus status;  // PENDING, CONFIRMED, EXPIRED
+    private BookingStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // getters/setters, konstruktori...
-    // Enum:
+
     public enum BookingStatus {
         PENDING, CONFIRMED, EXPIRED
     }
