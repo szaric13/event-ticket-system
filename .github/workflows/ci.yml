@@ -60,4 +60,5 @@ jobs:
       - name: Build and test Booking Service
         run: |
           cd booking-service
+          chmod +x mvnw
           ./mvnw clean test -Dspring.profiles.active=test --batch-mode
