@@ -39,7 +39,7 @@ public class BookingService {
     private static final int RESERVATION_TTL_SECONDS = 900;
 
     public Booking createBooking(Long userId, Long eventId, int ticketCount) {
-        String inventoryUrl = "https://event-inventory-service-xxxx.onrender.com/events/" + eventId + "/reserve";
+        String inventoryUrl = "https://event-inventory-service.onrender.com/events/" + eventId + "/reserve";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         Map<String, Integer> requestMap = Map.of("count", ticketCount);
