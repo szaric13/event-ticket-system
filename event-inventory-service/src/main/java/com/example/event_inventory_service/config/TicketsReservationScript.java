@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TicketsReservationScript {
 
+    //reddis lua
+
     private static final String LUA_SCRIPT =
             "local key = KEYS[1]\n" +
                     "local requested = tonumber(ARGV[1])\n" +
